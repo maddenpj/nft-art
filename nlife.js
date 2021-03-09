@@ -18,7 +18,8 @@ var life = {
   canvas         : null,  // Set during init
   frontBoard     : [], // The grid
   backBoard      : [], // Temporary grid for simultaneous stepping
-  currentBoard   : 0 // 0 = Front, 1 = back
+  currentBoard   : 0, // 0 = Front, 1 = back
+  numCycles      : 0
 };
 
 
@@ -47,38 +48,77 @@ function countNeighbors(posx, posy, board) {
   );
 }
 
+function wave(x, y, dt) {
+  var theta = Math.atan(y / x)
+  var len = Math.sqrt((x*x) + (y*y))
+  var sine = Math.sin(theta * dt);
+  var rValue = Math.floor(sine * 255)
+  // var hex = c.toString(16);
+  // var hexValue = hex.length == 1 ? "0" + hex : hex;
+  // return hexValue;
+  return rValue;
+}
 
-function getColor(xPos, yPos, board) {
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+
+function getColor(xPos, yPos, numCycles, board) {
   var x, y;
   var color = {};
   var dominant;
   var dominantCount = 0;
 
-  for (x = xPos - 1; x <= xPos + 1; x++) {
-    if (! board[x]) {
-      continue;
-    }
+  // for (x = xPos - 1; x <= xPos + 1; x++) {
+    // if (! board[x]) {
+      // continue;
+    // }
 
-    for (y = yPos - 1; y <= yPos + 1; y++) {
-      if (board[x][y]) {
-        if (color[board[x][y]]) {
-          color[board[x][y]]++;
-        }
-        else {
-          color[board[x][y]] = 1;
-        }
-      }
-    }
-  }
+    // for (y = yPos - 1; y <= yPos + 1; y++) {
+      // if (board[x][y]) {
+        // if (color[board[x][y]]) {
+          // color[board[x][y]]++;
+        // } else {
+          // color[board[x][y]] = 1;
+        // }
+      // }
+    // }
+  // }
 
-  for (x in color) {
-    if (color[x] > dominantCount) {
-      dominant = x;
-      dominantCount = color[x];
-    }
-  }
+  // for (x in color) {
+    // if (color[x] > dominantCount) {
+      // dominant = x;
+      // dominantCount = color[x];
+    // }
+  // }
 
-  return (dominant);
+
+  // var modifiedDominant;
+  // if (hexToRgb(dominant) != null) {
+    // var dominantRgb = hexToRgb(dominant);
+    // modifiedDominant = rgbToHex(wave(xPos, yPos, numCycles), dominantRgb.g, dominantRgb.b);
+  // } else {
+    // modifiedDominant = dominant;
+  // }
+
+  var color = rgbToHex(wave(xPos, yPos, numCycles), 0, 0)
+
+  return (color);
 }
 
 
@@ -94,7 +134,7 @@ function testLife(x, y, board) {
     }
   }
   else if (n == 3) {
-    return (getColor(x, y, board));
+    return (getColor(x, y, life.numCycles, board));
   }
   else {
     return (false);
@@ -123,6 +163,7 @@ function doCycle() {
     }
   }
 
+  life.numCycles += 1
   drawBoard(board);
   setTimeout(doCycle, life.updateTime);
 }
