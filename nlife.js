@@ -12,9 +12,9 @@
 
 var life = {
   version        : '0.5-color',
-  updateTime     : 25, // Wait time between cycles (no proper timing loop)
+  updateTime     : 50, // Wait time between cycles (no proper timing loop)
   chanceOfLife   : 6,
-  scale          : 5,
+  scale          : 10,
   canvas         : null,  // Set during init
   frontBoard     : [], // The grid
   backBoard      : [], // Temporary grid for simultaneous stepping
@@ -51,7 +51,7 @@ function countNeighbors(posx, posy, board) {
 function wave(x, y, dt) {
   var theta = Math.atan(y / x)
   var len = Math.sqrt((x*x) + (y*y))
-  var sine = Math.sin(theta * dt);
+  var sine = Math.sin(len-dt);
   var rValue = Math.floor(sine * 255)
   // var hex = c.toString(16);
   // var hexValue = hex.length == 1 ? "0" + hex : hex;
@@ -124,19 +124,17 @@ function getColor(xPos, yPos, numCycles, board) {
 
 function testLife(x, y, board) {
   var n = countNeighbors(x, y, board);
+  return (getColor(x, y, life.numCycles, board));
 
   if (isAlive(x, y, board)) {
     if ((n < 2) || (n > 3)) {
       return (false);
+    } else {
+      return (getColor(x, y, life.numCycles, board));
     }
-    else {
-      return (board[x][y]);
-    }
-  }
-  else if (n == 3) {
+  } else if (n == 3) {
     return (getColor(x, y, life.numCycles, board));
-  }
-  else {
+  } else {
     return (false);
   }
 }
@@ -222,8 +220,8 @@ function initBoard() {
     life.backBoard[x] = [];
 
     for (y = 0; y < life.boardHeight; y++) {
-      life.frontBoard[x][y] = Math.floor(Math.random() * life.chanceOfLife) == 0 ?
-        randomColor() : false;
+      // life.frontBoard[x][y] = Math.floor(Math.random() * life.chanceOfLife) == 0 ? randomColor() : false;
+      life.frontBoard[x][y] = false;
     }
   }
 }
