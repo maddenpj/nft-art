@@ -48,15 +48,16 @@ function countNeighbors(posx, posy, board) {
   );
 }
 
-function wave(x, y, dt) {
-  var theta = Math.atan(y / x)
+function wave(x, y, dt, phase, freq) {
   var len = Math.sqrt((x*x) + (y*y))
-  var sine = Math.sin(len-dt);
+  var sine = 0.5 + (Math.sin((len*freq) - (dt * phase))/ 2);
   var rValue = Math.floor(sine * 255)
-  // var hex = c.toString(16);
-  // var hexValue = hex.length == 1 ? "0" + hex : hex;
-  // return hexValue;
   return rValue;
+}
+
+function polarWave(x, y, dt) {
+
+  var theta = Math.atan(y / x)
 }
 
 function hexToRgb(hex) {
@@ -116,7 +117,12 @@ function getColor(xPos, yPos, numCycles, board) {
     // modifiedDominant = dominant;
   // }
 
-  var color = rgbToHex(wave(xPos, yPos, numCycles), 0, 0)
+  // var color = rgbToHex(wave(xPos, yPos, numCycles, 0), wave(xPos, yPos, numCycles, 0.5), wave(xPos, yPos, numCycles, 1.5))
+
+  var red   = wave(xPos, yPos, numCycles, 1, 1);
+  var green = wave(xPos, yPos, numCycles, 1.2, 1.3);
+  var blue  = wave(xPos, yPos, numCycles, 2, 0.4);
+  var color = rgbToHex(red, green, blue);
 
   return (color);
 }
@@ -125,18 +131,23 @@ function getColor(xPos, yPos, numCycles, board) {
 function testLife(x, y, board) {
   var n = countNeighbors(x, y, board);
   return (getColor(x, y, life.numCycles, board));
-
   if (isAlive(x, y, board)) {
-    if ((n < 2) || (n > 3)) {
-      return (false);
-    } else {
-      return (getColor(x, y, life.numCycles, board));
-    }
-  } else if (n == 3) {
     return (getColor(x, y, life.numCycles, board));
   } else {
-    return (false);
+    return false;
   }
+
+  // if (isAlive(x, y, board)) {
+    // if ((n < 2) || (n > 3)) {
+      // return (false);
+    // } else {
+      // return (getColor(x, y, life.numCycles, board));
+    // }
+  // } else if (n == 3) {
+    // return (getColor(x, y, life.numCycles, board));
+  // } else {
+    // return (false);
+  // }
 }
 
 
