@@ -51,13 +51,15 @@ function countNeighbors(posx, posy, board) {
 function wave(x, y, dt, phase, freq) {
   var len = Math.sqrt((x*x) + (y*y))
   var sine = 0.5 + (Math.sin((len*freq) - (dt * phase))/ 2);
-  var rValue = Math.floor(sine * 255)
+  var rValue = Math.floor(sine * 255);
   return rValue;
 }
 
-function polarWave(x, y, dt) {
-
-  var theta = Math.atan(y / x)
+function polarWave(x, y, dt, phase, freq) {
+  var theta = Math.atan(y / x);
+  var sine = 0.5 + (Math.sin((theta*freq) - (dt * phase))/ 2);
+  var colorValue = Math.floor(sine * 255);
+  return colorValue;
 }
 
 function hexToRgb(hex) {
@@ -119,9 +121,16 @@ function getColor(xPos, yPos, numCycles, board) {
 
   // var color = rgbToHex(wave(xPos, yPos, numCycles, 0), wave(xPos, yPos, numCycles, 0.5), wave(xPos, yPos, numCycles, 1.5))
 
+  var blueOne = wave(xPos, yPos, numCycles, 1, 1);
+  var blueTwo = polarWave(xPos, yPos, numCycles, 0.8, 20);
+  var ratio = 0.5 + (Math.sin(numCycles)/ 2);
+  var blueOneF = Math.floor(ratio * blueOne);
+  var blueTwoF = Math.floor((1-ratio) * blueTwo);
+
   var red   = wave(xPos, yPos, numCycles, 1, 1);
   var green = wave(xPos, yPos, numCycles, 1.2, 1.3);
-  var blue  = wave(xPos, yPos, numCycles, 2, 0.4);
+  // var blue  = polarWave(xPos, yPos, numCycles, 0.8, 20);
+  var blue  = blueTwo;
   var color = rgbToHex(red, green, blue);
 
   return (color);
